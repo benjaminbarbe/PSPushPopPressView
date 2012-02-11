@@ -46,27 +46,27 @@
     if ((self = [super initWithFrame:frame_])) {
         self.userInteractionEnabled = YES;
         self.multipleTouchEnabled = YES;
-
+		
         scaleTransform_ = CGAffineTransformIdentity;
         rotateTransform_ = CGAffineTransformIdentity;
         panTransform_ = CGAffineTransformIdentity;
         initialFrame_ = frame_;
         allowSingleTapSwitch_ = YES;
-
+		
         UIPinchGestureRecognizer* pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
         pinchRecognizer.cancelsTouchesInView = NO;
         pinchRecognizer.delaysTouchesBegan = NO;
         pinchRecognizer.delaysTouchesEnded = NO;
         pinchRecognizer.delegate = self;
         [self addGestureRecognizer: pinchRecognizer];
-
+		
         UIRotationGestureRecognizer* rotationRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
         rotationRecognizer.cancelsTouchesInView = NO;
         rotationRecognizer.delaysTouchesBegan = NO;
         rotationRecognizer.delaysTouchesEnded = NO;
         rotationRecognizer.delegate = self;
         [self addGestureRecognizer: rotationRecognizer];
-
+		
         panRecognizer_ = [[UIPanGestureRecognizer alloc] initWithTarget: self action:@selector(pinchPanRotate:)];
         panRecognizer_.cancelsTouchesInView = NO;
         panRecognizer_.delaysTouchesBegan = NO;
@@ -75,14 +75,14 @@
         panRecognizer_.minimumNumberOfTouches = 2;
         panRecognizer_.maximumNumberOfTouches = 2;
         [self addGestureRecognizer:panRecognizer_];
-
+		
         tapRecognizer_ = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(tap:)];
         tapRecognizer_.delegate = self;
         tapRecognizer_.cancelsTouchesInView = NO;
         tapRecognizer_.delaysTouchesBegan = NO;
         tapRecognizer_.delaysTouchesEnded = NO;
         [self addGestureRecognizer:tapRecognizer_];
-
+		
         doubleTouchRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTapped:)];
         doubleTouchRecognizer.delegate = self;
         doubleTouchRecognizer.cancelsTouchesInView = NO;
@@ -91,20 +91,20 @@
         doubleTouchRecognizer.numberOfTouchesRequired = 2;
         doubleTouchRecognizer.minimumPressDuration = 0.f;
         [self addGestureRecognizer:doubleTouchRecognizer];
-
+		
         self.layer.shadowRadius = 15.0f;
         self.layer.shadowOffset = CGSizeMake(5.0f, 5.0f);
         self.layer.shadowOpacity = 0.4f;
         self.layer.shadowColor = [UIColor blackColor].CGColor;
         self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
         self.layer.shadowOpacity = 0.0f;
-
+		
         // manually track rotations and adapt fullscreen
         // needed if we rotate within a fullscreen animation and miss the autorotate event
         [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(detectOrientation) name:UIDeviceOrientationDidChangeNotification object:nil];
     }
-
+	
     return self;
 }
 
@@ -116,7 +116,7 @@
 
 - (void)setInitialFrame:(CGRect)initialFrame {
     initialFrame_ = initialFrame;
-
+	
     // if we're not in fullscreen, re-set frame
     if (!self.isFullscreen) {
         self.frame = initialFrame;
@@ -130,7 +130,7 @@
 - (CGRect)windowBounds {
     // completely fullscreen
     CGRect windowBounds = [self rootView].bounds;
-
+	
     if (self.ignoreStatusBar) {
         windowBounds = [UIScreen mainScreen].bounds;
         if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
@@ -150,7 +150,7 @@
 - (BOOL)detachViewToWindow:(BOOL)enable {
     BOOL viewChanged = NO;
     UIView *rootView = [self rootView];
-
+	
     if (enable && !initialSuperview_) {
         initialSuperview_ = self.superview;
         CGRect newFrame = [self.superview convertRect:initialFrame_ toView:rootView];
@@ -182,7 +182,7 @@
     }else {
         [self.layer removeAnimationForKey:@"shadowOpacity"];
     }
-
+	
     [self updateShadowPath];
     self.layer.shadowOpacity = 1.0f;
 }
@@ -199,14 +199,14 @@
     }else {
         [self.layer removeAnimationForKey:@"shadowOpacity"];
     }
-
+	
     self.layer.shadowOpacity = 0.0f;
 }
 
 - (void)setBeingDragged:(BOOL)newBeingDragged {
     if (newBeingDragged != beingDragged_) {
         beingDragged_ = newBeingDragged;
-
+		
         if (beingDragged_) {
             [self applyShadowAnimated:YES];
         }else {
@@ -219,20 +219,20 @@
 - (void)moveViewToOriginalPositionAnimated:(BOOL)animated bounces:(BOOL)bounces {
     CGFloat bounceX = panTransform_.tx * kPSEmbeddedAnimationBounceMultiplier * -1;
     CGFloat bounceY = panTransform_.ty * kPSEmbeddedAnimationBounceMultiplier * -1;
-
+	
     // switch coordinates of gestureRecognizer in landscape
     if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         CGFloat tmp = bounceY;
         bounceY = bounceX;
         bounceX = tmp;
     }
-
+	
     self.fullscreen = NO;
-
+	
     if ([self.pushPopPressViewDelegate respondsToSelector:@selector(pushPopPressViewWillAnimateToOriginalFrame:duration:)]) {
         [self.pushPopPressViewDelegate pushPopPressViewWillAnimateToOriginalFrame:self duration:kPSAnimationMoveToOriginalPositionDuration*1.5f];
     }
-
+	
     [UIView animateWithDuration:animated ? kPSAnimationMoveToOriginalPositionDuration : 0.f delay: 0.0
                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                      animations:^{
@@ -243,12 +243,12 @@
                          self.transform = CGAffineTransformIdentity;
                          
                          CGRect correctedInitialFrame = [self superviewCorrectedInitialFrame];
-
+						 
                          if (bounces) {
                              if (abs(bounceX) > 0 || abs(bounceY) > 0) {
                                  CGFloat widthDifference = (self.frame.size.width - correctedInitialFrame.size.width) * 0.05;
                                  CGFloat heightDifference = (self.frame.size.height - correctedInitialFrame.size.height) * 0.05;
-
+								 
                                  CGRect targetFrame = CGRectMake(correctedInitialFrame.origin.x + bounceX + (widthDifference / 2.0), correctedInitialFrame.origin.y + bounceY + (heightDifference / 2.0), correctedInitialFrame.size.width + (widthDifference * -1), correctedInitialFrame.size.height + (heightDifference * -1));
                                  [self setFrame:targetFrame];
                              }else {
@@ -293,10 +293,10 @@
     if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewWillAnimateToFullscreenWindowFrame:duration:)]) {
         [self.pushPopPressViewDelegate pushPopPressViewWillAnimateToFullscreenWindowFrame: self duration: kPSAnimationDuration];
     }
-
+	
     BOOL viewChanged = [self detachViewToWindow:YES];
     self.fullscreen = YES;
-
+	
     [UIView animateWithDuration: animated ? kPSAnimationDuration : 0.f delay: 0.0
      // view hierarchy change needs some time propagating, don't use UIViewAnimationOptionBeginFromCurrentState when just changed
                         options:(viewChanged ? 0 : UIViewAnimationOptionBeginFromCurrentState) | UIViewAnimationOptionAllowUserInteraction
@@ -364,10 +364,10 @@
  */
 - (void)endedGesture:(UIGestureRecognizer *)gesture {
     if (gesturesEnded_) return;
-
+	
     UIPinchGestureRecognizer *pinch = [gesture isKindOfClass:[UIPinchGestureRecognizer class]] ? (UIPinchGestureRecognizer *)gesture : nil;
     if (scaleActive_ == YES && pinch == nil) return;
-
+	
     gesturesEnded_ = YES;
     if (pinch) {
         scaleActive_ = NO;
@@ -395,7 +395,7 @@
         CGPoint translation = [pan translationInView: self.superview];
         panTransform_ = CGAffineTransformTranslate(CGAffineTransformIdentity, translation.x, translation.y);
     }
-
+	
     self.transform = CGAffineTransformConcat(CGAffineTransformConcat(scaleTransform_, rotateTransform_), panTransform_);
 }
 
@@ -406,7 +406,7 @@
         UIView *piece = gestureRecognizer.view;
         CGPoint locationInView = [gestureRecognizer locationInView:piece];
         CGPoint locationInSuperview = [gestureRecognizer locationInView:piece.superview];
-
+		
         piece.layer.anchorPoint = CGPointMake(locationInView.x / piece.bounds.size.width, locationInView.y / piece.bounds.size.height);
         piece.center = locationInSuperview;
         anchorPointUpdated = YES; 
@@ -449,7 +449,8 @@
     switch (gesture.state) {
         case UIGestureRecognizerStateBegan: {
             self.beingDragged = YES;
-            [self.pushPopPressViewDelegate pushPopPressViewDidStartManipulation:self];
+			if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidStartManipulation:)])
+				[self.pushPopPressViewDelegate pushPopPressViewDidStartManipulation:self];
             break; 
         }
         case UIGestureRecognizerStatePossible: { 
@@ -458,7 +459,8 @@
         case UIGestureRecognizerStateCancelled: {
             self.beingDragged = NO;
             [self resetGestureRecognizers];
-            [self.pushPopPressViewDelegate pushPopPressViewDidFinishManipulation:self];
+			if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidFinishManipulation:)])
+				[self.pushPopPressViewDelegate pushPopPressViewDidFinishManipulation:self];
             break;
         } 
         case UIGestureRecognizerStateFailed: {
@@ -470,7 +472,8 @@
         case UIGestureRecognizerStateEnded: {
             self.beingDragged = NO;
             [self resetGestureRecognizers];
-            [self.pushPopPressViewDelegate pushPopPressViewDidFinishManipulation:self];
+			if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidFinishManipulation:)])
+				[self.pushPopPressViewDelegate pushPopPressViewDidFinishManipulation:self];
             break;
         }
     }
@@ -482,18 +485,18 @@
             if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidReceiveTap:)]) {
                 [self.pushPopPressViewDelegate pushPopPressViewDidReceiveTap: self];
             }
-
-             if (!self.isFullscreen) {
+			
+			if (!self.isFullscreen) {
                 if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewShouldAllowTapToAnimateToFullscreenWindowFrame:)]) {
                     if ([self.pushPopPressViewDelegate pushPopPressViewShouldAllowTapToAnimateToFullscreenWindowFrame: self] == NO) return;
                 }
-
+				
                 [self moveToFullscreenWindowAnimated:YES];
             } else {
                 if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewShouldAllowTapToAnimateToOriginalFrame:)]) {
                     if ([self.pushPopPressViewDelegate pushPopPressViewShouldAllowTapToAnimateToOriginalFrame: self] == NO) return;
                 }
-
+				
                 [self moveToOriginalFrameAnimated:YES];
             }
         }
@@ -504,11 +507,11 @@
     // if the gesture recognizers's view isn't one of our pieces, don't allow simultaneous recognition
     if (gestureRecognizer.view != self)
         return NO;
-
+	
     // if the gesture recognizers are on different views, don't allow simultaneous recognition
     if (gestureRecognizer.view != otherGestureRecognizer.view)
         return NO;
-
+	
     return YES;
 }
 
@@ -521,13 +524,13 @@
 
 - (void)moveToFullscreenWindowAnimated:(BOOL)animated {
     if (self.isFullscreen) return;
-
+	
     [self moveToFullscreenAnimated:animated bounces:YES];
 }
 
 - (void)moveToOriginalFrameAnimated:(BOOL)animated {
     if (self.isFullscreen == NO) return;
-
+	
     [self moveViewToOriginalPositionAnimated:animated bounces:YES];
 }
 
