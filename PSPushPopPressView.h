@@ -70,6 +70,12 @@
 /// if true, [UIScreen mainScreen] is used for coordinates (vs rootView)
 @property (nonatomic, assign) BOOL ignoreStatusBar;
 
+/// if false, shadowing would be disabled. This is used if you are going to provide your own shadowing. Defaults to YES.
+@property (nonatomic, assign) BOOL useShadowing;
+
+/// allow mode switching via pinch/rotate gesture. Defaults to YES.
+@property (nonatomic, assign) BOOL allowPinchRotateSwitch;
+
 
 /// animate/move to fullscreen
 - (void)moveToFullscreenWindowAnimated:(BOOL)animated;
