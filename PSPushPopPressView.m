@@ -397,6 +397,8 @@
 	
     gesturesEnded_ = YES;
     if (pinch) {
+		self.layer.shouldRasterize = NO;
+		
         scaleActive_ = NO;
         if (pinch.velocity >= 2.0f) {
             [self moveToFullscreenAnimated:YES bounces:YES];
@@ -412,6 +414,11 @@
     if ([gesture isKindOfClass:[UIPinchGestureRecognizer class]]) {
         UIPinchGestureRecognizer *pinch = (UIPinchGestureRecognizer *)gesture;
         scaleTransform_ = CGAffineTransformScale(CGAffineTransformIdentity, pinch.scale, pinch.scale);
+		
+		if (!self.layer.shouldRasterize)
+			self.layer.shouldRasterize = YES;
+		
+		self.layer.rasterizationScale = pinch.scale;
     }
     else if ([gesture isKindOfClass:[UIRotationGestureRecognizer class]]) {
         UIRotationGestureRecognizer *rotate = (UIRotationGestureRecognizer *)gesture;
