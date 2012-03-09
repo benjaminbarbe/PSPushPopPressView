@@ -32,6 +32,7 @@
 @synthesize beingDragged = beingDragged_;
 @synthesize fullscreen = fullscreen_;
 @synthesize initialFrame = initialFrame_;
+@synthesize initialTransform = initialTransform_;
 @synthesize allowSingleTapSwitch = allowSingleTapSwitch_;
 @synthesize ignoreStatusBar = ignoreStatusBar_;
 @synthesize useShadowing = useShadowing_;
@@ -53,6 +54,7 @@
 	rotateTransform_ = CGAffineTransformIdentity;
 	panTransform_ = CGAffineTransformIdentity;
 	initialFrame_ = frame_;
+	initialTransform_ = self.transform;
 	allowSingleTapSwitch_ = YES;
 	useShadowing_ = YES;
 	allowPinchRotateSwitch_ = YES;
@@ -137,6 +139,15 @@
     }
 }
 
+- (void)setInitialTransform:(CGAffineTransform)initialTransform
+{
+	initialTransform_ = initialTransform;
+	
+	if (!self.isFullscreen) {
+		self.transform = initialTransform;
+	}
+}
+
 - (void)setUseShadowing:(BOOL)value
 {
 	useShadowing_ = value;
@@ -188,6 +199,7 @@
             viewChanged = YES;
         }
         [self setFrame:initialFrame_];
+		[self setTransform:initialTransform_];
         initialSuperview_ = nil;
     }
     return viewChanged;
@@ -267,7 +279,7 @@
                          rotateTransform_ = CGAffineTransformIdentity;
                          panTransform_ = CGAffineTransformIdentity;
                          scaleTransform_ = CGAffineTransformIdentity;
-                         self.transform = CGAffineTransformIdentity;
+                         self.transform = initialTransform_;
                          
                          CGRect correctedInitialFrame = [self superviewCorrectedInitialFrame];
 						 

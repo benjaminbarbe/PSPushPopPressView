@@ -64,6 +64,9 @@
 /// set initialFrame if you change frame after initWithFrame
 @property (nonatomic, assign) CGRect initialFrame;
 
+/// set initialTransform if you change the transform after initWithFrame
+@property (nonatomic, assign) CGAffineTransform initialTransform;
+
 /// allow mode switching via single tap. Defaults to YES.
 @property (nonatomic, assign) BOOL allowSingleTapSwitch;
 
