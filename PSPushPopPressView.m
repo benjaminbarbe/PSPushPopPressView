@@ -160,12 +160,20 @@
 }
 
 - (UIView *)rootView {
-    return self.window.rootViewController.view;
+	UIViewController *rootController = self.window.rootViewController;
+	
+	if ([rootController isKindOfClass: [UINavigationController class]]) {
+		rootController = [(UINavigationController *)rootController topViewController];
+	}															 
+	
+    return rootController.view;
 }
 
 - (CGRect)windowBounds {
     // completely fullscreen
-    CGRect windowBounds = [self rootView].bounds;
+	UIView *rootView = [self rootView];
+	
+    CGRect windowBounds = rootView.bounds;
 	
     if (self.ignoreStatusBar) {
         windowBounds = [UIScreen mainScreen].bounds;
