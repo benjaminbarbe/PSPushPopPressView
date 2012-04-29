@@ -35,6 +35,8 @@
 /// only active if allowSingleTapSwitch is enabled (default)
 - (void)pushPopPressViewDidReceiveTap:(PSPushPopPressView *)pushPopPressView;
 
+- (BOOL)pushPopPressViewShouldBounce;
+
 @end
 
 @interface PSPushPopPressView : UIView <UIGestureRecognizerDelegate> {
