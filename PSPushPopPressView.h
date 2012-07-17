@@ -86,4 +86,10 @@
 /// align view based on current size (either initialPosition or fullscreen)
 - (void)alignViewAnimated:(BOOL)animated bounces:(BOOL)bounces;
 
+/// implemented by dreipol to override in subclass
+- (void)moveToFullscreenAnimated:(BOOL)animated bounces:(BOOL)bounces;
+
+/// implemented by dreipol to override in subclass
+- (void)moveViewToOriginalPositionAnimated:(BOOL)animated bounces:(BOOL)bounces;
+
 @end
