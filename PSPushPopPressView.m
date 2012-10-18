@@ -20,6 +20,8 @@
     BOOL beingDragged_;
     BOOL gesturesEnded_;
     BOOL scaleActive_;
+    UIPinchGestureRecognizer *pinchRecognizer_;
+    UIRotationGestureRecognizer *rotationRecognizer_;
 }
 @property (nonatomic, getter=isBeingDragged) BOOL beingDragged;
 @property (nonatomic, getter=isFullscreen) BOOL fullscreen;
@@ -56,19 +58,19 @@
         allowSingleTapSwitch_ = YES;
 		keepShadow_ = NO;
 
-        UIPinchGestureRecognizer* pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
-        pinchRecognizer.cancelsTouchesInView = NO;
-        pinchRecognizer.delaysTouchesBegan = NO;
-        pinchRecognizer.delaysTouchesEnded = NO;
-        pinchRecognizer.delegate = self;
-        [self addGestureRecognizer: pinchRecognizer];
+        pinchRecognizer_ = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
+        pinchRecognizer_.cancelsTouchesInView = NO;
+        pinchRecognizer_.delaysTouchesBegan = NO;
+        pinchRecognizer_.delaysTouchesEnded = NO;
+        pinchRecognizer_.delegate = self;
+        [self addGestureRecognizer: pinchRecognizer_];
 
-        UIRotationGestureRecognizer* rotationRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
-        rotationRecognizer.cancelsTouchesInView = NO;
-        rotationRecognizer.delaysTouchesBegan = NO;
-        rotationRecognizer.delaysTouchesEnded = NO;
-        rotationRecognizer.delegate = self;
-        [self addGestureRecognizer: rotationRecognizer];
+        rotationRecognizer_ = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
+        rotationRecognizer_.cancelsTouchesInView = NO;
+        rotationRecognizer_.delaysTouchesBegan = NO;
+        rotationRecognizer_.delaysTouchesEnded = NO;
+        rotationRecognizer_.delegate = self;
+        [self addGestureRecognizer: rotationRecognizer_];
 
         panRecognizer_ = [[UIPanGestureRecognizer alloc] initWithTarget: self action:@selector(pinchPanRotate:)];
         panRecognizer_.cancelsTouchesInView = NO;
@@ -220,6 +222,18 @@
             [self removeShadowAnimated:NO];//TODO: removing this shadow animation fixes the (shadow) problem when coming back from fullscreen, that's a good give-and-take for me. The bool was nice writted but I think something messed up in other parts of the code and the check that creates the bool `animate' are messed up so I fixed that the simple way.
         }
     }
+}
+
+- (BOOL)gestureRecognitionEnabled {
+    return doubleTouchRecognizer.enabled && panRecognizer_.enabled && rotationRecognizer_.enabled && pinchRecognizer_.enabled;
+}
+
+- (void)setGestureRecognitionEnabled:(BOOL)gestureRecognitionEnabled {
+    tapRecognizer_.enabled = gestureRecognitionEnabled;
+    doubleTouchRecognizer.enabled = gestureRecognitionEnabled;
+    panRecognizer_.enabled = gestureRecognitionEnabled;
+    rotationRecognizer_.enabled = gestureRecognitionEnabled;
+    pinchRecognizer_.enabled = gestureRecognitionEnabled;
 }
 
 - (void)moveViewToOriginalPositionAnimated:(BOOL)animated bounces:(BOOL)bounces {
