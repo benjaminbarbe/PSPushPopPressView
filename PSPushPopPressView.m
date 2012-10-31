@@ -300,7 +300,7 @@
                                                  }];
                          }else {
                              if (!self.isBeingDragged) {
-                                 //[self detachViewToWindow:NO];
+                                 [self detachViewToWindow:NO];
                              }
                              if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToOriginalFrame:)]) {
                                  [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToOriginalFrame: self];
