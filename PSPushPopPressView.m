@@ -271,34 +271,34 @@
 
                                  CGRect targetFrame = CGRectMake(correctedInitialFrame.origin.x + bounceX + (widthDifference / 2.0), correctedInitialFrame.origin.y + bounceY + (heightDifference / 2.0), correctedInitialFrame.size.width + (widthDifference * -1), correctedInitialFrame.size.height + (heightDifference * -1));
                                  [self setFrame:targetFrame];
-                             }else {
+                             } else {
                                  // there's reason behind this madness. shadow freaks out when we come from fullscreen, but not if we had transforms.
                                  fullscreenAnimationActive_ = YES;
                                  CGRect targetFrame = CGRectMake(correctedInitialFrame.origin.x + 3, correctedInitialFrame.origin.y + 3, correctedInitialFrame.size.width - 6, correctedInitialFrame.size.height - 6);
                                  //NSLog(@"targetFrame: %@ (superview: %@; initialSuperview: %@)", NSStringFromCGRect(targetFrame), self.superview, self.initialSuperview);
                                  [self setFrame:targetFrame];
                              }
-                         }else {
+                         } else {
                              [self setFrame:correctedInitialFrame];
                          }
                      }
                      completion: ^(BOOL finished) {
                          //NSLog(@"moveViewToOriginalPositionAnimated [complete] finished:%d, bounces:%d", finished, bounces);
                          fullscreenAnimationActive_ = NO;
-                         if (bounces && finished) {
+                         if (bounces) {
                              [UIView animateWithDuration: kPSAnimationMoveToOriginalPositionDuration/2 delay: 0.0
                                                  options:UIViewAnimationOptionAllowUserInteraction animations: ^{
                                                      CGRect correctedInitialFrame = [self superviewCorrectedInitialFrame];
                                                      [self setFrame:correctedInitialFrame];
                                                  } completion: ^(BOOL finished) {
-                                                     if (finished && !self.isBeingDragged) {
+                                                     if (!self.isBeingDragged) {
                                                          [self detachViewToWindow:NO];
                                                      }
                                                      if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToOriginalFrame:)]) {
                                                          [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToOriginalFrame: self];
                                                      }
                                                  }];
-                         }else {
+                         } else {
                              if (!self.isBeingDragged) {
                                  [self detachViewToWindow:NO];
                              }
@@ -333,7 +333,7 @@
                          }
                      }
                      completion:^(BOOL finished) {                         
-                         if (bounces && finished) {
+                         if (bounces) {
                              CGRect windowBounds = [self windowBounds];
                              [self detachViewToWindow:YES];
                              [UIView animateWithDuration:kPSAnimationDuration delay:0.f options:UIViewAnimationOptionAllowUserInteraction animations:^{
@@ -344,7 +344,7 @@
                                  }
                                  anchorPointUpdated = NO;
                              }];
-                         }else {
+                         } else {
                              if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToFullscreenWindowFrame:)]) {
                                  [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToFullscreenWindowFrame: self];
                              }
