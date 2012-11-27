@@ -396,15 +396,21 @@
     if (scaleActive_ == YES && pinch == nil) return;
 
     gesturesEnded_ = YES;
+	
+	BOOL shouldBounce = YES;
+	if (self.pushPopPressViewDelegate && [self.pushPopPressViewDelegate respondsToSelector:@selector(pushPopPressViewShouldBounce)]) {
+		shouldBounce = [self.pushPopPressViewDelegate pushPopPressViewShouldBounce];
+	}
+	
     if (pinch) {
         scaleActive_ = NO;
         if (pinch.velocity >= 2.0f) {
-            [self moveToFullscreenAnimated:YES bounces:YES];
+            [self moveToFullscreenAnimated:YES bounces:shouldBounce];
         } else {
-            [self alignViewAnimated:YES bounces:YES];
+            [self alignViewAnimated:YES bounces:shouldBounce];
         }
     } else {
-        [self alignViewAnimated:YES bounces:YES];
+        [self alignViewAnimated:YES bounces:shouldBounce];
     }
 }
 
@@ -554,14 +560,21 @@
 
 - (void)moveToFullscreenWindowAnimated:(BOOL)animated {
     if (self.isFullscreen) return;
-
-    [self moveToFullscreenAnimated:animated bounces:YES];
+	BOOL shouldBounce =  YES;
+	if (self.pushPopPressViewDelegate && [self.pushPopPressViewDelegate respondsToSelector:@selector(pushPopPressViewShouldBounce)]) {
+		shouldBounce = [self.pushPopPressViewDelegate pushPopPressViewShouldBounce];
+	}
+    [self moveToFullscreenAnimated:animated bounces:shouldBounce];
 }
 
 - (void)moveToOriginalFrameAnimated:(BOOL)animated {
     if (self.isFullscreen == NO) return;
 
-    [self moveViewToOriginalPositionAnimated:animated bounces:YES];
+	BOOL shouldBounce =  YES;
+	if (self.pushPopPressViewDelegate && [self.pushPopPressViewDelegate respondsToSelector:@selector(pushPopPressViewShouldBounce)]) {
+		shouldBounce = [self.pushPopPressViewDelegate pushPopPressViewShouldBounce];
+	}
+    [self moveViewToOriginalPositionAnimated:animated bounces:shouldBounce];
 }
 
 // enable/disable single tap detection

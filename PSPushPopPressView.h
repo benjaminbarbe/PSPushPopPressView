@@ -35,6 +35,8 @@
 /// only active if allowSingleTapSwitch is enabled (default)
 - (void)pushPopPressViewDidReceiveTap:(PSPushPopPressView *)pushPopPressView;
 
+- (BOOL)pushPopPressViewShouldBounce;
+
 @end
 
 @interface PSPushPopPressView : UIView <UIGestureRecognizerDelegate> {
@@ -86,5 +88,11 @@
 
 /// align view based on current size (either initialPosition or fullscreen)
 - (void)alignViewAnimated:(BOOL)animated bounces:(BOOL)bounces;
+
+/// implemented by dreipol to override in subclass
+- (void)moveToFullscreenAnimated:(BOOL)animated bounces:(BOOL)bounces;
+
+/// implemented by dreipol to override in subclass
+- (void)moveViewToOriginalPositionAnimated:(BOOL)animated bounces:(BOOL)bounces;
 
 @end
