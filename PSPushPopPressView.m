@@ -48,8 +48,8 @@
     }
 }
 
-- (void) performIntialSetup: (CGRect) frame_ {
-    if ((self = [super initWithFrame:frame_])) {
+- (void) performIntialSetup: (CGRect) frame_
+{
         self.userInteractionEnabled = YES;
         self.multipleTouchEnabled = YES;
 
