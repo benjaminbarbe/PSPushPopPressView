@@ -68,6 +68,9 @@
 /// set initialFrame if you change frame after initWithFrame
 @property (nonatomic, assign) CGRect initialFrame;
 
+/// set initialTransform if you change the transform after initWithFrame
+@property (nonatomic, assign) CGAffineTransform initialTransform;
+
 /// allow mode switching via single tap. Defaults to YES.
 @property (nonatomic, assign) BOOL allowSingleTapSwitch;
 
@@ -79,6 +82,12 @@
 
 /// can be used to disable the gestures on the view (no scaling,rotating etc. allowed)
 @property (nonatomic, assign) BOOL gestureRecognitionEnabled;
+
+/// if false, shadowing would be disabled. This is used if you are going to provide your own shadowing. Defaults to YES.
+@property (nonatomic, assign) BOOL useShadowing;
+
+/// allow mode switching via pinch/rotate gesture. Defaults to YES.
+@property (nonatomic, assign) BOOL allowPinchRotateSwitch;
 
 /// animate/move to fullscreen
 - (void)moveToFullscreenWindowAnimated:(BOOL)animated;
