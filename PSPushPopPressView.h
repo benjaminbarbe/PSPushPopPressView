@@ -75,6 +75,9 @@
 /// if true, shadow does not appear/disappear when animating
 @property (nonatomic, assign) BOOL keepShadow;
 
+/// can be used to disable the gestures on the view (no scaling,rotating etc. allowed)
+@property (nonatomic, assign) BOOL gestureRecognitionEnabled;
+
 /// animate/move to fullscreen
 - (void)moveToFullscreenWindowAnimated:(BOOL)animated;
 

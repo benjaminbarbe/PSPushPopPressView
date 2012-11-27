@@ -20,6 +20,8 @@
     BOOL beingDragged_;
     BOOL gesturesEnded_;
     BOOL scaleActive_;
+    UIPinchGestureRecognizer *pinchRecognizer_;
+    UIRotationGestureRecognizer *rotationRecognizer_;
 }
 @property (nonatomic, getter=isBeingDragged) BOOL beingDragged;
 @property (nonatomic, getter=isFullscreen) BOOL fullscreen;
@@ -55,19 +57,19 @@
         allowSingleTapSwitch_ = YES;
 		keepShadow_ = NO;
 
-        UIPinchGestureRecognizer* pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
-        pinchRecognizer.cancelsTouchesInView = NO;
-        pinchRecognizer.delaysTouchesBegan = NO;
-        pinchRecognizer.delaysTouchesEnded = NO;
-        pinchRecognizer.delegate = self;
-        [self addGestureRecognizer: pinchRecognizer];
+        pinchRecognizer_ = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
+        pinchRecognizer_.cancelsTouchesInView = NO;
+        pinchRecognizer_.delaysTouchesBegan = NO;
+        pinchRecognizer_.delaysTouchesEnded = NO;
+        pinchRecognizer_.delegate = self;
+        [self addGestureRecognizer: pinchRecognizer_];
 
-        UIRotationGestureRecognizer* rotationRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
-        rotationRecognizer.cancelsTouchesInView = NO;
-        rotationRecognizer.delaysTouchesBegan = NO;
-        rotationRecognizer.delaysTouchesEnded = NO;
-        rotationRecognizer.delegate = self;
-        [self addGestureRecognizer: rotationRecognizer];
+        rotationRecognizer_ = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(pinchPanRotate:)];
+        rotationRecognizer_.cancelsTouchesInView = NO;
+        rotationRecognizer_.delaysTouchesBegan = NO;
+        rotationRecognizer_.delaysTouchesEnded = NO;
+        rotationRecognizer_.delegate = self;
+        [self addGestureRecognizer: rotationRecognizer_];
 
         panRecognizer_ = [[UIPanGestureRecognizer alloc] initWithTarget: self action:@selector(pinchPanRotate:)];
         panRecognizer_.cancelsTouchesInView = NO;
@@ -229,6 +231,18 @@
     }
 }
 
+- (BOOL)gestureRecognitionEnabled {
+    return doubleTouchRecognizer.enabled && panRecognizer_.enabled && rotationRecognizer_.enabled && pinchRecognizer_.enabled;
+}
+
+- (void)setGestureRecognitionEnabled:(BOOL)gestureRecognitionEnabled {
+    tapRecognizer_.enabled = gestureRecognitionEnabled;
+    doubleTouchRecognizer.enabled = gestureRecognitionEnabled;
+    panRecognizer_.enabled = gestureRecognitionEnabled;
+    rotationRecognizer_.enabled = gestureRecognitionEnabled;
+    pinchRecognizer_.enabled = gestureRecognitionEnabled;
+}
+
 - (void)moveViewToOriginalPositionAnimated:(BOOL)animated bounces:(BOOL)bounces {
     CGFloat bounceX = panTransform_.tx * kPSEmbeddedAnimationBounceMultiplier * -1;
     CGFloat bounceY = panTransform_.ty * kPSEmbeddedAnimationBounceMultiplier * -1;
@@ -264,36 +278,36 @@
 
                                  CGRect targetFrame = CGRectMake(correctedInitialFrame.origin.x + bounceX + (widthDifference / 2.0), correctedInitialFrame.origin.y + bounceY + (heightDifference / 2.0), correctedInitialFrame.size.width + (widthDifference * -1), correctedInitialFrame.size.height + (heightDifference * -1));
                                  [self setFrame:targetFrame];
-                             }else {
+                             } else {
                                  // there's reason behind this madness. shadow freaks out when we come from fullscreen, but not if we had transforms.
                                  fullscreenAnimationActive_ = YES;
                                  CGRect targetFrame = CGRectMake(correctedInitialFrame.origin.x + 3, correctedInitialFrame.origin.y + 3, correctedInitialFrame.size.width - 6, correctedInitialFrame.size.height - 6);
                                  //NSLog(@"targetFrame: %@ (superview: %@; initialSuperview: %@)", NSStringFromCGRect(targetFrame), self.superview, self.initialSuperview);
                                  [self setFrame:targetFrame];
                              }
-                         }else {
+                         } else {
                              [self setFrame:correctedInitialFrame];
                          }
                      }
                      completion: ^(BOOL finished) {
                          //NSLog(@"moveViewToOriginalPositionAnimated [complete] finished:%d, bounces:%d", finished, bounces);
                          fullscreenAnimationActive_ = NO;
-                         if (bounces && finished) {
+                         if (bounces) {
                              [UIView animateWithDuration: kPSAnimationMoveToOriginalPositionDuration/2 delay: 0.0
                                                  options:UIViewAnimationOptionAllowUserInteraction animations: ^{
                                                      CGRect correctedInitialFrame = [self superviewCorrectedInitialFrame];
                                                      [self setFrame:correctedInitialFrame];
                                                  } completion: ^(BOOL finished) {
-                                                     if (finished && !self.isBeingDragged) {
+                                                     if (!self.isBeingDragged) {
                                                          [self detachViewToWindow:NO];
                                                      }
                                                      if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToOriginalFrame:)]) {
                                                          [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToOriginalFrame: self];
                                                      }
                                                  }];
-                         }else {
+                         } else {
                              if (!self.isBeingDragged) {
-                                 //[self detachViewToWindow:NO];
+                                 [self detachViewToWindow:NO];
                              }
                              if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToOriginalFrame:)]) {
                                  [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToOriginalFrame: self];
@@ -326,7 +340,7 @@
                          }
                      }
                      completion:^(BOOL finished) {                         
-                         if (bounces && finished) {
+                         if (bounces) {
                              CGRect windowBounds = [self windowBounds];
                              [self detachViewToWindow:YES];
                              [UIView animateWithDuration:kPSAnimationDuration delay:0.f options:UIViewAnimationOptionAllowUserInteraction animations:^{
@@ -337,7 +351,7 @@
                                  }
                                  anchorPointUpdated = NO;
                              }];
-                         }else {
+                         } else {
                              if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToFullscreenWindowFrame:)]) {
                                  [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToFullscreenWindowFrame: self];
                              }
