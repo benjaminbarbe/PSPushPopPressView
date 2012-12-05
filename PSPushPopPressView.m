@@ -43,9 +43,9 @@
 
 // adapt frame for fullscreen
 - (void)detectOrientation {
-    if (self.isFullscreen) {
-        self.frame = [self windowBounds];
-    }
+//    if (self.isFullscreen) {
+//        self.frame = [self windowBounds];
+//    }
 }
 
 - (void)performIntialSetup:(CGRect)frame_
@@ -306,6 +306,7 @@
         [self.pushPopPressViewDelegate pushPopPressViewWillAnimateToOriginalFrame:self duration:kPSAnimationMoveToOriginalPositionDuration*1.5f];
     }
 	
+    self.userInteractionEnabled = NO;
     [UIView animateWithDuration:animated ? kPSAnimationMoveToOriginalPositionDuration : 0.f delay: 0.0
                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                      animations:^{
@@ -347,6 +348,7 @@
                                                      if (!self.isBeingDragged) {
                                                          [self detachViewToWindow:NO];
                                                      }
+                                                     self.userInteractionEnabled = YES;
                                                      if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToOriginalFrame:)]) {
                                                          [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToOriginalFrame: self];
                                                      }
@@ -355,6 +357,7 @@
                              if (!self.isBeingDragged) {
                                  [self detachViewToWindow:NO];
                              }
+                             self.userInteractionEnabled = YES;
                              if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToOriginalFrame:)]) {
                                  [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToOriginalFrame: self];
                              }
@@ -370,6 +373,7 @@
     BOOL viewChanged = [self detachViewToWindow:YES];
     self.fullscreen = YES;
 	
+    self.userInteractionEnabled = NO;
     [UIView animateWithDuration: animated ? kPSAnimationDuration : 0.f delay: 0.0
      // view hierarchy change needs some time propagating, don't use UIViewAnimationOptionBeginFromCurrentState when just changed
                         options:(viewChanged ? 0 : UIViewAnimationOptionBeginFromCurrentState) | UIViewAnimationOptionAllowUserInteraction
@@ -392,12 +396,14 @@
                              [UIView animateWithDuration:kPSAnimationDuration delay:0.f options:UIViewAnimationOptionAllowUserInteraction animations:^{
                                  [self setFrame:windowBounds];
                              } completion:^(BOOL finished) {
+                                 self.userInteractionEnabled = YES;
                                  if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToFullscreenWindowFrame:)]) {
                                      [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToFullscreenWindowFrame: self];
                                  }
                                  anchorPointUpdated = NO;
                              }];
                          } else {
+                             self.userInteractionEnabled = YES;
                              if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToFullscreenWindowFrame:)]) {
                                  [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToFullscreenWindowFrame: self];
                              }
