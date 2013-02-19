@@ -47,6 +47,9 @@
     CGAffineTransform rotateTransform_;
     CGAffineTransform panTransform_;
     CGRect initialFrame_;
+    CGRect initialBounds_;
+    CGPoint initialCenter_;
+    CGAffineTransform initialTransform_;
 	NSInteger initialIndex_;
     BOOL allowSingleTapSwitch_;
     BOOL fullscreen_;
@@ -70,6 +73,8 @@
 
 /// set initialTransform if you change the transform after initWithFrame
 @property (nonatomic, assign) CGAffineTransform initialTransform;
+
+- (void)setInitialValues;
 
 /// allow mode switching via single tap. Defaults to YES.
 @property (nonatomic, assign) BOOL allowSingleTapSwitch;
