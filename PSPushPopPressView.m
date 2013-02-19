@@ -205,11 +205,8 @@
         CGPoint newCenter = [self.superview convertPoint:self.center toView:rootView];
         [rootView addSubview:self];
         self.center = newCenter;
-//        [self setFrame:newFrame];
         viewChanged = YES;
     } else if (!enable) {
-//        CGAffineTransform initialTransform = initialTransform_;
-//        self.transform = CGAffineTransformIdentity;
         if (initialSuperview_) {
             [initialSuperview_ insertSubview:self atIndex:initialIndex_];
             initialSuperview_ = nil;
@@ -219,9 +216,6 @@
         self.bounds = initialBounds_;
         self.center = initialCenter_;
         self.transform = initialTransform_;
-
-//        [self setFrame:initialFrame_];
-//		[self setTransform:initialTransform_];
     }
     return viewChanged;
 }
@@ -305,7 +299,6 @@
         [self.pushPopPressViewDelegate pushPopPressViewWillAnimateToOriginalFrame:self duration:kPSAnimationMoveToOriginalPositionDuration*1.5f];
     }
 	
-    //                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
     [UIView animateWithDuration:animated ? kPSAnimationMoveToOriginalPositionDuration : 0.f delay: 0.0
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
@@ -320,8 +313,6 @@
 						 
                          if (bounces) {
                              if (abs(bounceX) > 0 || abs(bounceY) > 0) {
-//                                 CGFloat widthDifference = (self.frame.size.width - correctedInitialFrame.size.width) * 0.05;
-//                                 CGFloat heightDifference = (self.frame.size.height - correctedInitialFrame.size.height) * 0.05;
                                  CGFloat widthDifference = (self.bounds.size.width - initialBounds_.size.width) * 0.05;
                                  CGFloat heightDifference = (self.bounds.size.height - initialBounds_.size.height) * 0.05;
 								 
@@ -333,12 +324,6 @@
                                                            + self.layer.anchorPoint.x * self.bounds.size.width,
                                                            initialCenter_.y + bounceY + (heightDifference / 2.0)
                                                            + self.layer.anchorPoint.y * self.bounds.size.height);
-                                 
-//                                 self.transform = initialTransform_;
-                                 
-//                                 CGRect targetFrame = CGRectMake(correctedInitialFrame.origin.x + bounceX + (widthDifference / 2.0), correctedInitialFrame.origin.y + bounceY + (heightDifference / 2.0), correctedInitialFrame.size.width + (widthDifference * -1), correctedInitialFrame.size.height + (heightDifference * -1));
-//                                 
-//                                 [self setFrame:targetFrame];
                              } else {
                                  // there's reason behind this madness. shadow freaks out when we come from fullscreen, but not if we had transforms.
                                  fullscreenAnimationActive_ = YES;
@@ -349,19 +334,13 @@
                                                            + self.layer.anchorPoint.x * self.bounds.size.width,
                                                            initialCenter_.y + 3
                                                            + self.layer.anchorPoint.y * self.bounds.size.height);
-//                                 self.transform = initialTransform_;
-                                 
-//                                 CGRect targetFrame = CGRectMake(correctedInitialFrame.origin.x + 3, correctedInitialFrame.origin.y + 3, correctedInitialFrame.size.width - 6, correctedInitialFrame.size.height - 6);
-                                 //NSLog(@"targetFrame: %@ (superview: %@; initialSuperview: %@)", NSStringFromCGRect(targetFrame), self.superview, self.initialSuperview);
-//                                 [self setFrame:targetFrame];
                              }
                          } else {
-//                             self.center = initialCenter_;
                              self.bounds = initialBounds_;
-                             self.center = CGPointMake(initialCenter_.x + self.layer.anchorPoint.x * self.bounds.size.width,
-                                                       initialCenter_.y + self.layer.anchorPoint.y * self.bounds.size.height);
-//                             self.transform = initialTransform_;
-//                             [self setFrame:correctedInitialFrame];
+                             self.center = CGPointMake(initialCenter_.x
+                                                       + self.layer.anchorPoint.x * self.bounds.size.width,
+                                                       initialCenter_.y
+                                                       + self.layer.anchorPoint.y * self.bounds.size.height);
                          }
                      }
                      completion: ^(BOOL finished) {
@@ -374,10 +353,6 @@
                                                      self.bounds = initialBounds_;
                                                      self.center = CGPointMake(initialCenter_.x + self.layer.anchorPoint.x * self.bounds.size.width,
                                                                                initialCenter_.y + self.layer.anchorPoint.y * self.bounds.size.height);
-                                                     
-//                                                     self.transform = initialTransform_;
-//                                                     CGRect correctedInitialFrame = [self superviewCorrectedInitialFrame];
-//                                                     [self setFrame:correctedInitialFrame];
                                                      
                                                  } completion: ^(BOOL finished) {
                                                      if (!self.isBeingDragged) {
@@ -426,9 +401,7 @@
                                                        windowBounds.origin.y - kPSFullscreenAnimationBounce
                                                        + self.layer.anchorPoint.y * self.bounds.size.height);
                              
-//                             [self setFrame:CGRectMake(windowBounds.origin.x - kPSFullscreenAnimationBounce, windowBounds.origin.y - kPSFullscreenAnimationBounce, windowBounds.size.width + kPSFullscreenAnimationBounce*2, windowBounds.size.height + kPSFullscreenAnimationBounce*2)];
                          } else {
-//                             [self setFrame:windowBounds];
                              self.bounds = CGRectMake(0, 0, windowBounds.size.width, windowBounds.size.height);
                              self.center = CGPointMake(windowBounds.origin.x
                                                        + self.layer.anchorPoint.x * self.bounds.size.width,
@@ -447,12 +420,8 @@
                                                            + self.layer.anchorPoint.x * self.bounds.size.width,
                                                            windowBounds.origin.y
                                                            + self.layer.anchorPoint.y * self.bounds.size.height);
-//                                 [self setFrame:windowBounds];
                                  
                              } completion:^(BOOL finished) {
-                                 
-//                                 self.layer.anchorPoint = CGPointMake(0, 0);
-//                                 self.center = windowBounds.origin;
                                  
                                  if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToFullscreenWindowFrame:)]) {
                                      [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToFullscreenWindowFrame: self];
@@ -460,9 +429,6 @@
                                  anchorPointUpdated = NO;
                              }];
                          } else {
-                             
-//                             self.layer.anchorPoint = CGPointMake(0, 0);
-//                             self.center = windowBounds.origin;
                              
                              if ([self.pushPopPressViewDelegate respondsToSelector: @selector(pushPopPressViewDidAnimateToFullscreenWindowFrame:)]) {
                                  [self.pushPopPressViewDelegate pushPopPressViewDidAnimateToFullscreenWindowFrame: self];
